@@ -3,7 +3,7 @@
     <div class="row no-gutters">
       <div class="col-md-4">
         <a :href="restaurant.image">
-          <img class="card-img" :src="restaurant.image" />
+          <img class="card-img" :src="restaurant.image | emptyImage" />
         </a>
       </div>
       <div class="col-md-8">
@@ -43,7 +43,9 @@
   </div>
 </template>
 <script>
+import { emptyImageFilter } from "./../utils/mixins";
 export default {
+  mixins: [emptyImageFilter],
   props: {
     initialRestaurant: {
       type: Object,
