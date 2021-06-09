@@ -308,6 +308,7 @@ const dummyData = {
 };
 
 export default {
+  name: "Restaurants",
   components: {
     NavTabs,
     RestaurantCard,

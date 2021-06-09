@@ -7,6 +7,7 @@
 import AdminRestaurantForm from "./../components/AdminRestaurantForm.vue";
 
 export default {
+  name: "AdminRestaurantNew",
   components: {
     AdminRestaurantForm,
   },

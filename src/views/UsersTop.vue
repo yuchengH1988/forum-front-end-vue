@@ -139,6 +139,7 @@ const usersTop = {
   ],
 };
 export default {
+  name: "UsersTop",
   components: {
     NavTabs,
     UserCard,

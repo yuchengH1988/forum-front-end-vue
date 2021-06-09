@@ -205,6 +205,7 @@ import RestaurantDetail from "./../components/RestaurantDetail";
 import RestaurantComments from "./../components/RestaurantComments";
 import CreateComment from "./../components/CreateComment";
 export default {
+  name: "Restaurant",
   components: {
     RestaurantDetail,
     RestaurantComments,

@@ -572,6 +572,7 @@ const dummyData = {
 };
 
 export default {
+  name: "RestaurantsFeeds",
   components: {
     NavTabs,
     NewestRestaurants,

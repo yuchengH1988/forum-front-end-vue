@@ -400,6 +400,7 @@ const dummyData = {
   ],
 };
 export default {
+  name: "RestaurantsTop",
   data() {
     return {
       restaurants: [],

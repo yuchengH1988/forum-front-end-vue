@@ -122,6 +122,7 @@ const dummyData = {
 };
 
 export default {
+  name: "RestaurantDashboard",
   data() {
     return {
       restaurant: {

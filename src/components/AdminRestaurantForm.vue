@@ -131,10 +131,10 @@ const dummyData = {
   ],
 };
 export default {
-  data() {
-    return {
-      categories: [],
-      restaurant: {
+  props: {
+    initialRestaurant: {
+      type: Object,
+      default: () => ({
         name: "",
         categoryId: "",
         tel: "",
@@ -142,11 +142,23 @@ export default {
         description: "",
         image: "",
         openingHours: "",
+      }),
+    },
+  },
+  data() {
+    return {
+      categories: [],
+      restaurant: {
+        ...this.initialRestaurant,
       },
     };
   },
   created() {
     this.fetchCategories();
+    this.restaurant = {
+      ...this.restaurant,
+      ...this.initialRestaurant,
+    };
   },
   methods: {
     fetchCategories() {
