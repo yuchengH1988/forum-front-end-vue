@@ -232,7 +232,6 @@ export default {
   created() {
     const { id: restaurantId } = this.$route.params;
     this.fetchRestaurant(restaurantId);
-    console.log("fetchRestaurant id : ", restaurantId);
   },
   methods: {
     fetchRestaurant() {

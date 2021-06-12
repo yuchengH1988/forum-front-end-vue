@@ -18,8 +18,9 @@
             @click.stop.prevent="createCategory"
             type="button"
             class="btn btn-primary"
+            :disabled="isProcessing"
           >
-            新增
+            {{ isProcessing ? "處理中 ...." : " 新增" }}
           </button>
         </div>
       </div>
@@ -70,8 +71,8 @@
               class="btn btn-link mr-2"
               @click.stop.prevent="
                 updateCategory({
-                  name: category.name,
                   categoryId: category.id,
+                  name: category.name,
                 })
               "
             >
@@ -93,36 +94,8 @@
 
 <script>
 import AdminNav from "@/components/AdminNav";
-import uuid from "uuid/v4";
-//  2. 定義暫時使用的資料
-const dummyData = {
-  categories: [
-    {
-      id: 1,
-      name: "中式料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-    {
-      id: 2,
-      name: "日本料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-    {
-      id: 3,
-      name: "義大利料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-    {
-      id: 4,
-      name: "墨西哥料理",
-      createdAt: "2019-06-22T09:00:43.000Z",
-      updatedAt: "2019-06-22T09:00:43.000Z",
-    },
-  ],
-};
+import adminAPI from "./../apis/admin";
+import { Toast } from "./../utils/helpers";
 
 export default {
   components: {
@@ -133,6 +106,7 @@ export default {
     return {
       newCategoryName: "",
       categories: [],
+      isProcessing: false,
     };
   },
   // 5. 調用 `fetchCategories` 方法
@@ -141,25 +115,75 @@ export default {
   },
   methods: {
     // 4. 定義 `fetchCategories` 方法，把 `dummyData` 帶入 Vue 物件
-    fetchCategories() {
-      this.categories = dummyData.categories.map((category) => ({
-        ...category,
-        isEditing: false,
-        nameCached: "",
-      }));
+    async fetchCategories() {
+      try {
+        const { data } = await adminAPI.categories.get();
+        this.categories = data.categories.map((category) => ({
+          ...category,
+          isEditing: false,
+          nameCached: "",
+        }));
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法取得目錄資料，請稍後再試",
+        });
+      }
     },
     // eslint-disable-next-line
-    createCategory(name) {
-      this.categories.push({
-        id: uuid(),
-        name: this.newCategoryName,
-      });
-      this.newCategoryName = "";
+    async createCategory() {
+      try {
+        if (!this.newCategoryName) {
+          Toast.fire({
+            icon: "error",
+            title: "請輸入名稱",
+          });
+          return;
+        }
+        this.isProcessing = true;
+        const { data } = await adminAPI.categories.create({
+          name: this.newCategoryName,
+        });
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+        this.categories.push({
+          id: data.categoryId,
+          name: this.newCategoryName,
+          isEditing: false,
+          nameCached: "",
+        });
+        this.isProcessing = false;
+        this.newCategoryName = "";
+      } catch (error) {
+        this.isProcessing = false;
+        Toast.fire({
+          icon: "error",
+          title: "無法建立新目錄，請稍後再試",
+        });
+      }
     },
-    deleteCategory(categoryId) {
-      this.categories = this.categories.filter(
-        (category) => category.id !== categoryId
-      );
+    async deleteCategory(categoryId) {
+      try {
+        const { data } = await adminAPI.categories.delete({ categoryId });
+        console.log("data", data);
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        } else {
+          Toast.fire({
+            icon: "success",
+            title: `目錄ID ${categoryId} 已被刪除`,
+          });
+        }
+        this.categories = this.categories.filter(
+          (category) => category.id !== categoryId
+        );
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法刪除目錄，請稍後再試",
+        });
+      }
     },
     toggleIsEditing(categoryId) {
       this.categories = this.categories.map((category) => {
@@ -173,9 +197,26 @@ export default {
         return category;
       });
     },
-    // eslint-disable-next-line
-    updateCategory({ categoryId, name }) {
-      this.toggleIsEditing(categoryId);
+    async updateCategory({ categoryId, name }) {
+      try {
+        if (!this.name) {
+          Toast.fire({
+            icon: "error",
+            title: "請輸入名稱",
+          });
+          return;
+        }
+        const { data } = await adminAPI.categories.update({ categoryId, name });
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+        this.toggleIsEditing(categoryId);
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法更新目錄，請稍後再試",
+        });
+      }
     },
     handleCancel(categoryId) {
       this.categories = this.categories.map((category) => {

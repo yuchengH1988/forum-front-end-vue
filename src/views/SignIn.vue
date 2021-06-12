@@ -34,7 +34,11 @@
         />
       </div>
 
-      <button class="btn btn-lg btn-primary btn-block mb-3" type="submit">
+      <button
+        :disabled="isProcesscing"
+        class="btn btn-lg btn-primary btn-block mb-3"
+        type="submit"
+      >
         Submit
       </button>
 
@@ -49,22 +53,46 @@
   </div>
 </template>
 <script>
+/* eslint-disable */
+import authorizationAPI from "./../apis/authorization";
+import { Toast } from "./../utils/helpers";
 export default {
   data() {
     return {
       email: "",
       password: "",
+      isProcesscing: false,
     };
   },
   methods: {
-    handleSubmit() {
-      const data = JSON.stringify({
-        email: this.email,
-        password: this.password,
-      });
-
-      // TODO: 向後端驗證使用者登入資訊是否合法
-      console.log("data", data);
+    async handleSubmit(e) {
+      try {
+        if (!this.email || !this.password) {
+          Toast.fire({
+            icon: "warning",
+            title: "請輸入帳號密碼",
+          });
+          return;
+        }
+        this.isProcesscing = true;
+        const response = await authorizationAPI.signIn({
+          email: this.email,
+          password: this.password,
+        });
+        const { data } = response;
+        if (data.status !== "success") {
+          throw new Error(data.message);
+        }
+        localStorage.setItem("token", data.token);
+        this.$router.push("/restaurants");
+      } catch (error) {
+        this.password = "";
+        this.isProcesscing = false;
+        Toast.fire({
+          icon: "warning",
+          title: "請輸入正確的帳號密碼",
+        });
+      }
     },
   },
 };
