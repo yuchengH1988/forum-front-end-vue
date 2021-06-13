@@ -120,7 +120,8 @@ const dummyData = {
     ],
   },
 };
-
+import restaurantsAPI from "./../apis/restaurants";
+import { Toast } from "./../utils/helpers";
 export default {
   name: "RestaurantDashboard",
   data() {
@@ -134,21 +135,30 @@ export default {
     };
   },
   methods: {
-    fetchRestaurant(restaurantId) {
-      this.restaurant = {
-        id: restaurantId,
-        name: dummyData.restaurant.name,
-        categoryName: dummyData.restaurant.Category.name,
-        commentsLength: dummyData.restaurant.Comments.length,
-        viewCounts: dummyData.restaurant.viewCounts,
-      };
+    async fetchRestaurant(restaurantId) {
+      try {
+        const { data } = await restaurantsAPI.getDashboard({ restaurantId });
+        const { restaurant } = data;
+        this.restaurant = {
+          id: restaurant.id,
+          name: restaurant.name,
+          categoryName: restaurant.Category.name,
+          commentsLength: restaurant.Comments.length,
+          viewCounts: restaurant.viewCounts,
+        };
+      } catch (error) {
+        Toast.fire({
+          icon: "error",
+          title: "無法載入餐廳Dashboard，請稍後再試",
+        });
+      }
     },
   },
   created() {
     const { id: restaurantId } = this.$route.params;
     this.fetchRestaurant(restaurantId);
-    console.log("fetchRestaurant id : ", restaurantId);
   },
+  watch: {},
 };
 </script>
 
