@@ -26,7 +26,7 @@ export default {
   props: {
     FavoritedRestaurants: {
       type: Array,
-      require: true,
+      default: () => [],
     },
   },
 };
