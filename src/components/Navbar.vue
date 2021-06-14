@@ -31,6 +31,7 @@
             {{ currentUser.name || "使用者" }} 您好
           </router-link>
           <button
+            @click="logout"
             type="button"
             class="btn btn-sm btn-outline-success my-2 my-sm-0"
           >
@@ -47,6 +48,12 @@ export default {
   // Vue 會在沒有資料時使用此預設值
   computed: {
     ...mapState(["currentUser", "isAuthenticated"]),
+  },
+  methods: {
+    logout() {
+      this.$store.commit("revokeAuthentication");
+      this.$router.push("/signin");
+    },
   },
 };
 </script>
