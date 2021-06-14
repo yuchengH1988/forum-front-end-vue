@@ -23,8 +23,11 @@
             </li>
           </ul>
           <p v-if="user.id === currentUser.id">
-            <a href="/users/1/edit"
-              ><button type="submit" class="btn btn-primary">edit</button></a
+            <router-link
+              :to="{ name: 'user-edit', params: { id: currentUser.id } }"
+              ><button type="submit" class="btn btn-primary">
+                edit
+              </button></router-link
             >
           </p>
           <p v-if="user.id !== currentUser.id">
