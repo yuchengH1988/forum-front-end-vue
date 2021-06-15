@@ -1,19 +1,22 @@
 <template>
   <div class="container py-5">
-    <RestaurantDetail :initialRest="restaurant" />
-    <!-- 餐廳資訊頁 RestaurantDetail -->
-    <hr />
-    <!-- 餐廳評論 RestaurantComments -->
-    <RestaurantComments
-      :restaurantComments="restaurantComments"
-      :currentUser="currentUser"
-      @after-delete-comment="afterDeleteComment"
-    />
-    <!-- 新增評論 CreateComment -->
-    <CreateComment
-      :restaurantId="restaurant.id"
-      @after-create-comment="afterCreateComment"
-    />
+    <Spinner v-if="isLoading" />
+    <template v-else>
+      <RestaurantDetail :initialRest="restaurant" />
+      <!-- 餐廳資訊頁 RestaurantDetail -->
+      <hr />
+      <!-- 餐廳評論 RestaurantComments -->
+      <RestaurantComments
+        :restaurantComments="restaurantComments"
+        :currentUser="currentUser"
+        @after-delete-comment="afterDeleteComment"
+      />
+      <!-- 新增評論 CreateComment -->
+      <CreateComment
+        :restaurantId="restaurant.id"
+        @after-create-comment="afterCreateComment"
+      />
+    </template>
   </div>
 </template>
 <script>
@@ -22,6 +25,7 @@ import RestaurantDetail from "./../components/RestaurantDetail";
 import RestaurantComments from "./../components/RestaurantComments";
 import CreateComment from "./../components/CreateComment";
 import restaurantsAPI from "./../apis/restaurants";
+import Spinner from "./../components/Spinner.vue";
 import { Toast } from "./../utils/helpers";
 export default {
   name: "Restaurant",
@@ -29,6 +33,7 @@ export default {
     RestaurantDetail,
     RestaurantComments,
     CreateComment,
+    Spinner,
   },
   data() {
     return {
@@ -45,6 +50,7 @@ export default {
         isLiked: false,
       },
       restaurantComments: [],
+      isLoading: true,
     };
   },
   computed: {
@@ -62,6 +68,7 @@ export default {
   methods: {
     async fetchRestaurant(restaurantId) {
       try {
+        this.isLoading = true;
         // STEP 4: 透過 restaurantsAPI 取得餐廳資訊
         const { data } = await restaurantsAPI.getRestaurant({ restaurantId });
 
@@ -93,7 +100,9 @@ export default {
         };
 
         this.restaurantComments = Comments;
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         // STEP 6: 透過 restaurantsAPI 取得餐廳資訊
         Toast.fire({
           icon: "error",

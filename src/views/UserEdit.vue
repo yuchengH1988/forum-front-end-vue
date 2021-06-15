@@ -89,12 +89,9 @@ export default {
     },
     handleFileChange(e) {
       const { files } = e.target;
-      if (files.length === 0) {
-        this.user.image = "";
-      } else {
-        const imageURL = window.URL.createObjectURL(files[0]);
-        this.user.image = imageURL;
-      }
+      if (!files.length) return;
+      const imageURL = window.URL.createObjectURL(files[0]);
+      this.user.image = imageURL;
     },
     async handleSubmit(e) {
       try {

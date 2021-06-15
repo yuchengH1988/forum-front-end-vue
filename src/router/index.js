@@ -3,7 +3,7 @@ import Router from 'vue-router'
 import NotFound from '../views/NotFound.vue'
 import SignIn from '../views/SignIn.vue'
 import Restaurants from '../views/Restaurants.vue'
-import store from '../store'
+import store from './../store'
 
 Vue.use(Router)
 const authorizeIsAdmin = (to, from, next) => {

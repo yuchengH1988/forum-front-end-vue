@@ -25,7 +25,8 @@
         </div>
       </div>
     </form>
-    <table class="table">
+    <Spinner v-if="isLoading" />
+    <table v-else class="table">
       <thead class="thead-dark">
         <tr>
           <th scope="col" width="60">#</th>
@@ -95,11 +96,13 @@
 <script>
 import AdminNav from "@/components/AdminNav";
 import adminAPI from "./../apis/admin";
+import Spinner from "./../components/Spinner.vue";
 import { Toast } from "./../utils/helpers";
 
 export default {
   components: {
     AdminNav,
+    Spinner,
   },
   // 3. 定義 Vue 中使用的 data 資料
   data() {
@@ -107,6 +110,7 @@ export default {
       newCategoryName: "",
       categories: [],
       isProcessing: false,
+      isLoading: true,
     };
   },
   // 5. 調用 `fetchCategories` 方法
@@ -123,7 +127,9 @@ export default {
           isEditing: false,
           nameCached: "",
         }));
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         Toast.fire({
           icon: "error",
           title: "無法取得目錄資料，請稍後再試",

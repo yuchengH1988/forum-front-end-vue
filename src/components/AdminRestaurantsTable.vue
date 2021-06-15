@@ -1,5 +1,6 @@
 <template>
-  <table class="table" v-if="!isLoading">
+  <Spinner v-if="isLoading" />
+  <table v-else class="table">
     <thead class="thead-dark">
       <tr>
         <th scope="col">#</th>
@@ -49,9 +50,13 @@
 
 <script>
 import adminAPI from "./../apis/admin";
+import Spinner from "./../components/Spinner";
 import { Toast } from "./../utils/helpers";
 
 export default {
+  components: {
+    Spinner,
+  },
   data() {
     return {
       restaurants: [],

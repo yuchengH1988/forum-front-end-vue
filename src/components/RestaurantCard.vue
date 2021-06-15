@@ -15,7 +15,7 @@
             >{{ restaurant.name }}</router-link
           >
         </p>
-        <span class="badge badge-secondary bg-secondary text-white">{{
+        <span class="badge badge-secondary">{{
           restaurant.Category ? restaurant.Category.name : "未分類"
         }}</span>
         <p class="card-text text-truncate">
@@ -24,6 +24,7 @@
       </div>
       <div class="card-footer">
         <button
+          :disabled="isProcessing"
           v-if="restaurant.isFavorited"
           @click.stop.prevent="deleteFavorite(restaurant.id)"
           type="button"
@@ -32,6 +33,7 @@
           移除最愛
         </button>
         <button
+          :disabled="isProcessing"
           v-else
           @click.stop.prevent="addFavorite(restaurant.id)"
           type="button"
@@ -40,6 +42,7 @@
           加到最愛
         </button>
         <button
+          :disabled="isProcessing"
           v-if="restaurant.isLiked"
           @click.stop.prevent="deleteLike(restaurant.id)"
           type="button"
@@ -48,6 +51,7 @@
           Unlike
         </button>
         <button
+          :disabled="isProcessing"
           v-else
           @click.stop.prevent="addLike(restaurant.id)"
           type="button"
@@ -74,6 +78,7 @@ export default {
   data() {
     return {
       restaurant: this.initialRestaurant,
+      isProcessing: false,
     };
   },
   methods: {
@@ -96,6 +101,7 @@ export default {
     },
     async deleteFavorite(restaurantId) {
       try {
+        this.isProcessing = true;
         const { data } = await usersAPI.deleteFavorite({ restaurantId });
 
         if (data.status !== "success") {
@@ -106,7 +112,9 @@ export default {
           ...this.restaurant,
           isFavorited: false,
         };
+        this.isProcessing = false;
       } catch (error) {
+        this.isProcessing = false;
         Toast.fire({
           icon: "error",
           title: "無法將餐廳移除最愛，請稍後再試",
@@ -116,6 +124,7 @@ export default {
     },
     async addLike(restaurantId) {
       try {
+        this.isProcessing = true;
         const { data } = await usersAPI.addLike({ restaurantId });
         if (data.status !== "success") {
           throw new Error(data.message);
@@ -124,7 +133,9 @@ export default {
           ...this.restaurant,
           isLiked: true,
         };
+        this.isProcessing = false;
       } catch (error) {
+        this.isProcessing = false;
         Toast.fire({
           icon: "error",
           title: "無法將餐廳推送喜歡，請稍後在試",
@@ -133,6 +144,7 @@ export default {
     },
     async deleteLike(restaurantId) {
       try {
+        this.isProcessing = true;
         const { data } = await usersAPI.deleteLike({ restaurantId });
         if (data.status !== "success") {
           throw new Error(data.message);
@@ -141,7 +153,9 @@ export default {
           ...this.restaurant,
           isLiked: false,
         };
+        this.isProcessing = false;
       } catch (error) {
+        this.isProcessing = false;
         Toast.fire({
           icon: "error",
           title: "無法把Like從餐廳收回，請稍後再試",
@@ -152,3 +166,33 @@ export default {
   },
 };
 </script>
+<style scoped>
+.badge.badge-secondary {
+  padding: 0;
+  margin: 8px 0;
+  color: #bd2333;
+  background-color: transparent;
+}
+
+.btn,
+.btn-border.btn:hover {
+  margin: 7px 14px 7px 0;
+}
+
+.card {
+  margin-bottom: 2rem !important;
+}
+.card-img-top {
+  background-color: #efefef;
+}
+
+.card-body {
+  padding: 17.5px;
+}
+
+.card-footer {
+  padding: 9px 17.5px;
+  border-color: rgb(232, 232, 232);
+  background: white;
+}
+</style>

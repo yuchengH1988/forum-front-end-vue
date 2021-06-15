@@ -2,21 +2,25 @@
   <div class="container py-5">
     <NavTabs />
     <RestaurantsNavPills :categories="categories" />
-    <div class="row">
-      <RestaurantCard
-        v-for="restaurant in restaurants"
-        :key="restaurant.id"
-        :initial-restaurant="restaurant"
+    <Spinner v-if="isLoading" />
+    <template v-else>
+      <div class="row">
+        <RestaurantCard
+          v-for="restaurant in restaurants"
+          :key="restaurant.id"
+          :initial-restaurant="restaurant"
+        />
+      </div>
+      <RestaurantsPagination
+        v-if="totalPage.length > 1"
+        :currentPage="currentPage"
+        :totalPage="totalPage"
+        :categoryId="categoryId"
+        :previousPage="previousPage"
+        :nextPage="nextPage"
       />
-    </div>
-    <RestaurantsPagination
-      v-if="totalPage.length > 1"
-      :currentPage="currentPage"
-      :totalPage="totalPage"
-      :categoryId="categoryId"
-      :previousPage="previousPage"
-      :nextPage="nextPage"
-    />
+      <div v-if="restaurants.length < 1">此類別目前無餐廳資料</div>
+    </template>
   </div>
 </template>
 <script>
@@ -25,6 +29,7 @@ import RestaurantCard from "./../components/RestaurantCard";
 import RestaurantsNavPills from "./../components/RestaurantsNavPills";
 import RestaurantsPagination from "./../components/RestaurantsPagination";
 import restaurantsAPI from "./../apis/restaurants";
+import Spinner from "./../components/Spinner";
 import { Toast } from "./../utils/helpers";
 
 export default {
@@ -34,6 +39,7 @@ export default {
     RestaurantCard,
     RestaurantsNavPills,
     RestaurantsPagination,
+    Spinner,
   },
   data() {
     return {
@@ -44,6 +50,7 @@ export default {
       totalPage: [],
       previousPage: -1,
       nextPage: -1,
+      isLoading: true,
     };
   },
   created() {
@@ -53,6 +60,7 @@ export default {
   methods: {
     async fetchRestaurants({ queryPage, queryCategoryId }) {
       try {
+        this.isLoading = true;
         const response = await restaurantsAPI.getRestaurants({
           page: queryPage,
           categoryId: queryCategoryId,
@@ -74,7 +82,9 @@ export default {
         this.totalPage = totalPage;
         this.previousPage = prev;
         this.nextPage = next;
+        this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         Toast.fire({
           icon: "error",
           title: "無法取得餐廳資料，請稍後再試",

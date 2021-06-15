@@ -9,7 +9,7 @@
       <div class="col-md-8">
         <div class="card-body">
           <h5 class="card-title">{{ restaurant.name }}</h5>
-          <span class="badge badge-secondary bg-secondary text-white"
+          <span class="badge badge-secondary"
             >收藏數：{{ restaurant.FavoriteCount }}</span
           >
           <p class="card-text">
