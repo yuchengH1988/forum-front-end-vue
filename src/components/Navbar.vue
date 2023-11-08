@@ -14,7 +14,10 @@
       <span class="navbar-toggler-icon" />
     </button>
 
-    <div id="navbarSupportedContent" class="navbar-collapse collapse">
+    <div
+      id="navbarSupportedContent text-right"
+      class="navbar-collapse collapse"
+    >
       <div class="ml-auto d-flex align-items-center">
         <!-- is user is admin -->
         <router-link
